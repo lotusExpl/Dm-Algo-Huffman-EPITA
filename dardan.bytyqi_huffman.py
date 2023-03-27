@@ -50,6 +50,14 @@ def __merge_sort(arr): # function that use the merge sort algorithm to sort a li
     right = __merge_sort(right)
     
     return __merge(left, right)
+
+def __insert(list , x): # function that insert a BinTree in the right place in a BinTree list
+    count = len(list)-1
+    list.append(x)
+    while count > 0 and list[count].key[0] < x.key[0]:
+        list[count],list[count+1] = list[count+1],list[count]
+        count -= 1
+
     
     
 
@@ -79,8 +87,16 @@ def build_Huffman_tree(inputList):
     """
     Processes the frequency list into a Huffman tree according to the algorithm.
     """
-    # FIXME
-    pass
+    treeList = []
+    for i in inputList:
+        treeList.append(bintree(i,None,None))
+    lim = len(treeList)
+    while lim != 1:
+        tree = bintree(treeList[lim-1][0].key + treeList[lim-2][0].key, treeList[lim-1] , treeList[lim-2])
+        __insert(treeList, tree) #pb probable quand len = 2 et pb de type aussi
+    return treeList[0]
+        
+
 
 
 def encode_data(huffmanTree, dataIN):
