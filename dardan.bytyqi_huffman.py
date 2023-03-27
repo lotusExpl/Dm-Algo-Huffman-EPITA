@@ -5,7 +5,7 @@ __revision__ = '$Id: huffman.py 2023-03-24'
 """
 Huffman homework
 2023-03
-@author: login
+@author: dardan.bytyqi
 """
 
 from algo_py import bintree
@@ -17,14 +17,62 @@ from algo_py import heap
 # Do not add any import
 
 ###############################################################################
+# FONCTIONS AUXILIAIRES
+
+
+def __merge(left, right): # Merge two sorted lists into a single sorted list.
+    result = []
+    i, j = 0, 0
+    
+    while i < len(left) and j < len(right):
+        if left[i][0] >= right[j][0]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    
+    result += left[i:]
+    result += right[j:]
+    
+    return result
+
+
+def __merge_sort(arr): # function that use the merge sort algorithm to sort a list of tuple of type (int,str)
+    if len(arr) <= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left = arr[:mid]
+    right = arr[mid:]
+    
+    left = __merge_sort(left)
+    right = __merge_sort(right)
+    
+    return __merge(left, right)
+    
+    
+
+###############################################################################
 ## COMPRESSION
 
 def build_frequency_list(dataIN):
     """
     Builds a tuple list of the character frequencies in the input.
     """
-    # FIXME
-    pass
+    hist = [];
+    for i in range(255):
+        hist.append(0);
+    for i in dataIN:
+        hist[ord(i)] += 1;
+    res = [];
+    for i in range(255):
+        if hist[i] != 0:
+            res.append((hist[i], chr(i)));
+    return res;
+
+
+
 
 
 def build_Huffman_tree(inputList):
