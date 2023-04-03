@@ -18,49 +18,7 @@ from algo_py import heap
 
 ###############################################################################
 # FONCTIONS AUXILIAIRES
-
-
-def __merge(left, right): # Merge two sorted lists into a single sorted list.
-    result = []
-    i, j = 0, 0
     
-    while i < len(left) and j < len(right):
-        if left[i][0] >= right[j][0]:
-            result.append(left[i])
-            i += 1
-        else:
-            result.append(right[j])
-            j += 1
-    
-    result += left[i:]
-    result += right[j:]
-    
-    return result
-
-
-def __merge_sort(arr): # function that use the merge sort algorithm to sort a list of tuple of type (int,str)
-    if len(arr) <= 1:
-        return arr
-    
-    mid = len(arr) // 2
-    left = arr[:mid]
-    right = arr[mid:]
-    
-    left = __merge_sort(left)
-    right = __merge_sort(right)
-    
-    return __merge(left, right)
-
-def __insert(list, x): # function that insert a BinTree in the right place in a BinTree list
-    count = len(list)-1
-    list.append(x)
-    while count > 0 and list[count].key[0] < x.key[0]:
-        list[count],list[count+1] = list[count+1],list[count]
-        count -= 1
-
-    
-    
-
 ###############################################################################
 ## COMPRESSION
 
@@ -87,19 +45,18 @@ def build_Huffman_tree(inputList):
     """
     Processes the frequency list into a Huffman tree according to the algorithm.
     """
-    inputList = __merge_sort(inputList)
-    treeList = []
-    
-    for i in inputList:
-        treeList.append(bintree.BinTree(i,None,None))
-        print(i)
-    lim = len(treeList)
-    while lim != 1:
-        tree = bintree.BinTree(treeList[lim-1].key[0] + treeList[lim-2].key[0], treeList[lim-1] , treeList[lim-2])
-        __insert(treeList, tree) #pb probable quand len = 2 et pb de type aussi sur key
-    return treeList[0]
-        
-build_Huffman_tree(build_frequency_list("hdfgohgvdkjvkldjgsgfineruieyrfuydfgqwwlf3ih;uwyugugugf whsfio-dvbeiojvg3rgd4.;g,/[]bpdf;w iahghf]jgohegj1ejfgven"))
+
+    H = heap.Heap()
+    for elt in inputList:
+        H.push((elt[0],bintree.BinTree(elt[1],None,None)))
+
+    while len(H.elts) > 2: #2 car heap commence avec none
+        n1 = H.pop()
+        n2 = H.pop()
+        H.push((n1[0]+n2[0], bintree.BinTree(None, n2[1], n1[1])))
+
+    return H.pop()[1];
+
 
 
 def encode_data(huffmanTree, dataIN):
