@@ -19,6 +19,79 @@ from algo_py import heap
 ###############################################################################
 # FONCTIONS AUXILIAIRES
     
+
+def __build_dict(huffmanTree : bintree.BinTree): 
+    '''
+    fonction qui retourne une liste de tuples (char, chemin d'occurence)
+    etant un equivalent de dictionnaire pour l'encodage des lettres
+    '''
+    dico = []
+    def build(tree : bintree.BinTree, chemin : str) -> None:
+        '''
+        fonction chapeau qui ajoute des elements dans le dico
+        '''
+
+        if tree.left == None and tree.right == None:
+            dico.append((tree.key, chemin))
+
+        if tree.left != None:
+            build(tree.left, chemin + '0')
+        
+        if tree.right != None:
+            build(tree.right, chemin + '1')
+    
+    build(huffmanTree, "")
+
+    return dico;
+
+
+
+def __defi(char, dico):
+    '''
+    retourne le chemin d'occurence d'un charactere
+    '''
+
+    i = 0
+    while dico[i][0] != char:
+        i += 1
+
+    return dico[i][1];
+
+
+
+def __binary_to_int(octet):
+    '''
+    converti un octet en un entier pour une autre fonction
+    '''
+
+    res = 0
+    pow = 0
+    for i in range(len(octet)-1,-1,-1):
+        res += (ord(octet[i])-48)*(2**pow)
+        pow += 1
+    return res;
+
+
+
+def __slice(txt):
+    '''
+    retourne une liste d'octet et un reste
+    '''
+
+    res = []
+    size = len(txt)
+    for i in range(size // 8):
+        octet = ""
+        for j in range(8):
+            octet += txt[i*8 + j]
+        res.append(octet)
+    reste = ""
+    for i in range((size//8)*8,size):
+        reste += txt[i]
+    if reste == "":
+        reste = '0'
+    return (res,reste)
+        
 ###############################################################################
 ## COMPRESSION
 
@@ -39,8 +112,6 @@ def build_frequency_list(dataIN):
 
 
 
-
-
 def build_Huffman_tree(inputList):
     """
     Processes the frequency list into a Huffman tree according to the algorithm.
@@ -50,7 +121,7 @@ def build_Huffman_tree(inputList):
     for elt in inputList:
         H.push((elt[0],bintree.BinTree(elt[1],None,None)))
 
-    while len(H.elts) > 2: #2 car heap commence avec none
+    while len(H.elts) > 2: #2 car heap commence avec None
         n1 = H.pop()
         n2 = H.pop()
         H.push((n1[0]+n2[0], bintree.BinTree(None, n2[1], n1[1])))
@@ -59,30 +130,56 @@ def build_Huffman_tree(inputList):
 
 
 
-def encode_data(huffmanTree, dataIN):
+def encode_data(huffmanTree : bintree.BinTree, dataIN : str):
     """
     Encodes the input string to its binary string representation.
     """
-    # FIXME
-    pass
+    dico = __build_dict(huffmanTree)
+    res = ""
+    for c in dataIN:
+        res += __defi(c, dico)
+    return res;
 
 
-def encode_tree(huffmanTree):
+
+
+def encode_tree(huffmanTree : bintree.BinTree):
     """
     Encodes a huffman tree to its binary representation using a preOrder traversal:
         * each leaf key is encoded into its binary representation on 8 bits preceded by '1'
         * each time we go left we add a '0' to the result
     """
-    # FIXME
-    pass
+
+    if huffmanTree.left == None and huffmanTree.right == None:
+        return '1' + huffmanTree.key
+    elif huffmanTree.left != None and huffmanTree.right != None:
+        return '0' + encode_tree(huffmanTree.left) + encode_tree(huffmanTree.right)
+    elif huffmanTree.left != None:
+        return '0' + encode_tree(huffmanTree.left)
+    else:
+        return '0' + encode_tree(huffmanTree.right)
+
+
 
 
 def to_binary(dataIN):
     """
     Compresses a string containing binary code to its real binary value.
     """
-    # FIXME
-    pass
+
+    (data,reste) = __slice(dataIN)
+    res = ""
+    plus = 1
+    
+    for o in data:
+        res += chr(__binary_to_int(o))
+
+    if reste == 0:
+        plus = 0
+    #regler la base du reste
+    return (res + "x" + reste, len(data) + plus)
+
+
 
 
 def compress(dataIn):
@@ -129,3 +226,11 @@ def decompress(data, dataAlign, tree, treeAlign):
     """
     # FIXME
     pass
+
+
+
+
+#huff = build_Huffman_tree(build_frequency_list('bbaabtttaabtctce'))
+#print(huff)
+#print(encode_data(huff, 'bbaabtttaabtctce'))
+#print(to_binary('01011010010000001010010011000110111'))
