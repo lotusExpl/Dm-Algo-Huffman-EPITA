@@ -73,24 +73,46 @@ def __binary_to_int(octet):
 
 
 
+def __int_to_binary(n : int) -> str:
+    '''
+    retourne le code binaire d'un entier sur un octet
+    '''
+
+    res = ""
+    while n != 0:
+        res = res + chr(n % 2 + 48)
+        n //= 2
+    while len(res) != 8:
+        res = '0' + res
+    return res;
+
+
+
 def __slice(txt):
     '''
-    retourne une liste d'octet et un reste
+    retourne une liste d'octet 
     '''
 
     res = []
     size = len(txt)
-    for i in range(size // 8):
+    for i in range(0,size // 8):
         octet = ""
-        for j in range(8):
+        for j in range(0,8):
             octet += txt[i*8 + j]
         res.append(octet)
+
     reste = ""
     for i in range((size//8)*8,size):
         reste += txt[i]
-    if reste == "":
-        reste = '0'
-    return (res,reste)
+    if reste != "":
+        while len(reste) != 8:
+            reste = '0' + reste
+        res.append(reste)
+    
+    return (res)
+
+
+
         
 ###############################################################################
 ## COMPRESSION
@@ -151,7 +173,7 @@ def encode_tree(huffmanTree : bintree.BinTree):
     """
 
     if huffmanTree.left == None and huffmanTree.right == None:
-        return '1' + huffmanTree.key
+        return '1' + __int_to_binary(ord(huffmanTree.key))
     elif huffmanTree.left != None and huffmanTree.right != None:
         return '0' + encode_tree(huffmanTree.left) + encode_tree(huffmanTree.right)
     elif huffmanTree.left != None:
@@ -167,17 +189,13 @@ def to_binary(dataIN):
     Compresses a string containing binary code to its real binary value.
     """
 
-    (data,reste) = __slice(dataIN)
+    data = __slice(dataIN)
     res = ""
-    plus = 1
-    
+        
     for o in data:
         res += chr(__binary_to_int(o))
 
-    if reste == 0:
-        plus = 0
-    #regler la base du reste
-    return (res + "x" + reste, len(data) + plus)
+    return (res , len(data))
 
 
 
@@ -187,8 +205,9 @@ def compress(dataIn):
     The main function that makes the whole compression process.
     """
     
-    # FIXME
-    pass
+    huff = build_Huffman_tree(build_frequency_list(dataIn))
+    return(to_binary(encode_data(huff, dataIn)), to_binary(encode_tree(huff)))
+
 
     
 ################################################################################
@@ -234,3 +253,7 @@ def decompress(data, dataAlign, tree, treeAlign):
 #print(huff)
 #print(encode_data(huff, 'bbaabtttaabtctce'))
 #print(to_binary('01011010010000001010010011000110111'))
+
+#print(to_binary("01011010010000001010010011000110111"))
+#build_Huffman_tree(build_frequency_list("bbaabtttaabtctce"))
+print(compress("bbaabtttaabtctce"))
