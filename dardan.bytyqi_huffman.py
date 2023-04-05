@@ -80,7 +80,7 @@ def __int_to_binary(n : int) -> str:
 
     res = ""
     while n != 0:
-        res = res + chr(n % 2 + 48)
+        res = chr(n % 2 + 48) + res
         n //= 2
     while len(res) != 8:
         res = '0' + res
@@ -104,12 +104,15 @@ def __slice(txt):
     reste = ""
     for i in range((size//8)*8,size):
         reste += txt[i]
+    
+    align = 0
     if reste != "":
         while len(reste) != 8:
+            align += 1
             reste = '0' + reste
         res.append(reste)
     
-    return (res)
+    return (res, align)
 
 
 
@@ -189,13 +192,13 @@ def to_binary(dataIN):
     Compresses a string containing binary code to its real binary value.
     """
 
-    data = __slice(dataIN)
+    (data, align) = __slice(dataIN)
     res = ""
         
     for o in data:
         res += chr(__binary_to_int(o))
 
-    return (res , len(data))
+    return (res , align)
 
 
 
@@ -218,6 +221,7 @@ def decode_data(huffmanTree, dataIN):
     Decode a string using the corresponding huffman tree into something more readable.
     """
     # FIXME
+    
     pass
 
     
@@ -235,8 +239,18 @@ def from_binary(dataIN, align):
     """
     Retrieve a string containing binary code from its real binary value (inverse of :func:`toBinary`).
     """
-    # FIXME
-    pass
+    
+    lim = len(dataIN)
+    res = ""
+    for i in range(lim-1):
+        res += __int_to_binary(ord(dataIN[i]))
+        
+    reste = __int_to_binary(ord(dataIN[lim-1]))
+    for i in range(align, 8):
+        res += reste[i]
+    return res;
+
+
 
 
 def decompress(data, dataAlign, tree, treeAlign):
@@ -256,4 +270,8 @@ def decompress(data, dataAlign, tree, treeAlign):
 
 #print(to_binary("01011010010000001010010011000110111"))
 #build_Huffman_tree(build_frequency_list("bbaabtttaabtctce"))
-print(compress("bbaabtttaabtctce"))
+#print(to_binary("10100101000000010000110101100011111"))
+#huff = build_Huffman_tree(build_frequency_list('ZELIUfbmozefn'))
+#print(huff)
+#print(encode_tree(huff))
+#print(encode_data(huff, 'ZELIUfbmozefn'))
