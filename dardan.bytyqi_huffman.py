@@ -116,7 +116,7 @@ def __slice(txt):
 
 
 
-        
+     
 ###############################################################################
 ## COMPRESSION
 
@@ -216,13 +216,42 @@ def compress(dataIn):
 ################################################################################
 ## DECOMPRESSION
 
-def decode_data(huffmanTree, dataIN):
+def decode_data(huffmanTree : bintree.BinTree, dataIN : str):
     """
     Decode a string using the corresponding huffman tree into something more readable.
     """
-    # FIXME
-    
-    pass
+
+    res = ""
+    pointeur = 0
+    tree = huffmanTree
+    path = dataIN[0]
+
+    while pointeur < len(dataIN)-1:
+        for i in range(len(path)-1):
+            if path[i] == '0':
+                tree = tree.left 
+                
+                
+            else:
+                tree = tree.right
+            print(path) 
+            print(tree)
+            
+        if tree != None and tree.key != None:
+            res = res + str(tree.key)
+            tree = huffmanTree
+            path = ""
+            # pb dans la maniere de gerer le path
+        pointeur += 1
+        path += dataIN[pointeur]
+
+    return res
+
+huffman = build_Huffman_tree(build_frequency_list('bbaabtttaabtctce'))
+
+data = encode_data(huffman,'bbaabtttaabtctce' )
+print(decode_data(huffman, data))
+
 
     
 def decode_tree(dataIN):
@@ -231,8 +260,24 @@ def decode_tree(dataIN):
         * a '0' means we add a new internal node and go to its left node
         * a '1' means the next 8 values are the encoded character of the current leaf         
     """
-    # FIXME
-    pass
+    
+    def __rec_decode_tree(dataIN, pointeur, decalage):
+        if dataIN[pointeur] == '0':
+            left = __rec_decode_tree(dataIN, pointeur + 1)
+
+        # inserer algo ici
+
+        else:
+            feuille = ""
+            for i in range(pointeur, pointeur + 8):
+                feuille += dataIN[i]
+            pointeur += 8
+            return bintree.BinTree(chr(__binary_to_int(feuille)), None, None)
+    
+    return # inserer resultat ici
+        
+
+
 
 
 def from_binary(dataIN, align):
