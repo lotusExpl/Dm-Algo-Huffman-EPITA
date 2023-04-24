@@ -125,12 +125,12 @@ def build_frequency_list(dataIN):
     Builds a tuple list of the character frequencies in the input.
     """
     hist = [];
-    for i in range(255):
+    for i in range(256):
         hist.append(0);
     for i in dataIN:
         hist[ord(i)] += 1;
     res = [];
-    for i in range(255):
+    for i in range(256):
         if hist[i] != 0:
             res.append((hist[i], chr(i)));
     return res;
@@ -220,40 +220,29 @@ def decode_data(huffmanTree : bintree.BinTree, dataIN : str):
     """
     Decode a string using the corresponding huffman tree into something more readable.
     """
-
     res = ""
-    pointeur = 0
-    tree = huffmanTree
-    path = dataIN[0]
+    tree = huffmanTree;
+    for i in dataIN:
 
-    while pointeur < len(dataIN)-1:
-        for i in range(len(path)-1):
-            if path[i] == '0':
-                tree = tree.left 
-                
-                
-            else:
-                tree = tree.right
-            print(path) 
-            print(tree)
-            
         if tree != None and tree.key != None:
-            res = res + str(tree.key)
+            res += tree.key
             tree = huffmanTree
-            path = ""
-            # pb dans la maniere de gerer le path
-        pointeur += 1
-        path += dataIN[pointeur]
 
-    return res
+        
+        if i == '0':
+            tree = tree.left
+        else:
+            tree = tree.right
+            
+    res += tree.key
+    tree = huffmanTree
+    return res;
 
-huffman = build_Huffman_tree(build_frequency_list('bbaabtttaabtctce'))
-
-data = encode_data(huffman,'bbaabtttaabtctce' )
-print(decode_data(huffman, data))
 
 
-    
+
+
+
 def decode_tree(dataIN):
     """
     Decodes a huffman tree from its binary representation:
@@ -306,17 +295,3 @@ def decompress(data, dataAlign, tree, treeAlign):
     pass
 
 
-
-
-#huff = build_Huffman_tree(build_frequency_list('bbaabtttaabtctce'))
-#print(huff)
-#print(encode_data(huff, 'bbaabtttaabtctce'))
-#print(to_binary('01011010010000001010010011000110111'))
-
-#print(to_binary("01011010010000001010010011000110111"))
-#build_Huffman_tree(build_frequency_list("bbaabtttaabtctce"))
-#print(to_binary("10100101000000010000110101100011111"))
-#huff = build_Huffman_tree(build_frequency_list('ZELIUfbmozefn'))
-#print(huff)
-#print(encode_tree(huff))
-#print(encode_data(huff, 'ZELIUfbmozefn'))
