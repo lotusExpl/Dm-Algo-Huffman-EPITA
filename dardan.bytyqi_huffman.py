@@ -116,6 +116,25 @@ def __slice(txt):
 
 
 
+def __rec_decode_tree(dataIN : str, pointeur : int) -> tuple [bintree.BinTree, int]:
+    '''
+    fonction qui retourne un couple (bintree, int)
+    pointeur est l'indice dans la string dataIN qui permet alors de savoir ou on se trouve pour decoder l'arbre
+    '''
+    
+    if dataIN[pointeur] == '0':
+        (left, newPoint) = __rec_decode_tree(dataIN, pointeur + 1)
+        (right, newPoint) = __rec_decode_tree(dataIN, newPoint)
+        return (bintree.BinTree(None, left, right), newPoint)
+    else:
+        pointeur += 1
+        feuille = ""
+        for i in range(pointeur, pointeur + 8):
+            feuille += dataIN[i]
+            
+        pointeur += 8
+        return (bintree.BinTree(chr(__binary_to_int(feuille)), None, None), pointeur)
+
      
 ###############################################################################
 ## COMPRESSION
@@ -250,22 +269,9 @@ def decode_tree(dataIN):
         * a '1' means the next 8 values are the encoded character of the current leaf         
     """
     
-    def __rec_decode_tree(dataIN, pointeur, decalage):
-        if dataIN[pointeur] == '0':
-            left = __rec_decode_tree(dataIN, pointeur + 1)
-
-        # inserer algo ici
-
-        else:
-            feuille = ""
-            for i in range(pointeur, pointeur + 8):
-                feuille += dataIN[i]
-            pointeur += 8
-            return bintree.BinTree(chr(__binary_to_int(feuille)), None, None)
     
-    return # inserer resultat ici
+    return __rec_decode_tree(dataIN, 0)[0];
         
-
 
 
 
@@ -291,7 +297,12 @@ def decompress(data, dataAlign, tree, treeAlign):
     """
     The whole decompression process.
     """
-    # FIXME
-    pass
+    return decode_data(decode_tree(from_binary(tree, treeAlign)), from_binary(data, dataAlign))
 
 
+
+dataToComp = "je suis une grande folle qui aime les sucettes a l'anisÿ"
+compressed = compress(dataToComp)
+print(compressed)
+decompressed = decompress(compressed[0][0], compressed[0][1], compressed[1][0], compressed[1][1])
+print(decompressed)
