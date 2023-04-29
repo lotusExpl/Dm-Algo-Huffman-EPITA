@@ -28,7 +28,7 @@ def __build_dict(huffmanTree : bintree.BinTree):
     dico = []
     def build(tree : bintree.BinTree, chemin : str) -> None:
         '''
-        fonction chapeau qui ajoute des elements dans le dico
+        fonction chapeau qui ajoute des elements dans le dico de la premiere fonction
         '''
 
         if tree.left == None and tree.right == None:
@@ -41,14 +41,14 @@ def __build_dict(huffmanTree : bintree.BinTree):
             build(tree.right, chemin + '1')
     
     build(huffmanTree, "")
-
     return dico;
 
 
 
 def __defi(char, dico):
     '''
-    retourne le chemin d'occurence d'un charactere
+    retourne le chemin d'occurence d'un charactere en allant le chercher dans un genre 
+    de dictionnaire
     '''
 
     i = 0
@@ -61,7 +61,7 @@ def __defi(char, dico):
 
 def __binary_to_int(octet):
     '''
-    converti un octet en un entier pour une autre fonction
+    converti un octet en un entier
     '''
 
     res = 0
@@ -90,6 +90,7 @@ def __int_to_binary(n : int) -> str:
 
 def __slice(txt):
     '''
+    separe le txt binaire en groupe de huit caracteres
     retourne une liste d'octet 
     '''
 
@@ -247,7 +248,6 @@ def decode_data(huffmanTree : bintree.BinTree, dataIN : str):
             res += tree.key
             tree = huffmanTree
 
-        
         if i == '0':
             tree = tree.left
         else:
@@ -268,8 +268,6 @@ def decode_tree(dataIN):
         * a '0' means we add a new internal node and go to its left node
         * a '1' means the next 8 values are the encoded character of the current leaf         
     """
-    
-    
     return __rec_decode_tree(dataIN, 0)[0];
         
 
@@ -298,11 +296,3 @@ def decompress(data, dataAlign, tree, treeAlign):
     The whole decompression process.
     """
     return decode_data(decode_tree(from_binary(tree, treeAlign)), from_binary(data, dataAlign))
-
-
-
-dataToComp = "je suis une grande folle qui aime les sucettes a l'anisÿ"
-compressed = compress(dataToComp)
-print(compressed)
-decompressed = decompress(compressed[0][0], compressed[0][1], compressed[1][0], compressed[1][1])
-print(decompressed)
